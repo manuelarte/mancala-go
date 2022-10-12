@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-
 	gameEngine := Initialize()
+
 	println("Initiating game")
 	for gameEngine.PlayerTurn.CanPlay() == true {
 		display(gameEngine)
@@ -51,6 +51,7 @@ func display(engine *models.GameEngine) {
 }
 
 func Initialize() *models.GameEngine {
+	initialBeads := uint(4)
 	player1 := &models.Player{Name: "Player1"}
 	player2 := &models.Player{Name: "Player2", Next: player1}
 	player1.Next = player2
@@ -79,7 +80,7 @@ func Initialize() *models.GameEngine {
 		var bowl = &models.PlayerBowl{
 			Number: uint(i),
 			BaseBowl: models.BaseBowl{
-				Beads: 4,
+				Beads: initialBeads,
 				Owner: player1,
 			},
 		}
@@ -87,7 +88,7 @@ func Initialize() *models.GameEngine {
 		var oppositeBowl = &models.PlayerBowl{
 			Number: uint(5 - i),
 			BaseBowl: models.BaseBowl{
-				Beads: 4,
+				Beads: initialBeads,
 				Owner: player2,
 			},
 			Opposite: bowl,
