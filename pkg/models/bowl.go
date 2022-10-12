@@ -18,7 +18,7 @@ type BaseBowl struct {
 }
 
 type PlayerBowl struct {
-	Number uint // just for debugging
+	Number uint
 	BaseBowl
 	Opposite *PlayerBowl
 }

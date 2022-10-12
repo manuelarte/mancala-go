@@ -10,7 +10,7 @@ type Player struct {
 }
 
 func (p *Player) CanPlay() bool {
-	bg := p.BowlsGenerator()
+	bg := p.bowlsGenerator()
 	for b := range bg {
 		if pb, ok := b.(*PlayerBowl); ok && !pb.IsEmpty() {
 			return true
@@ -24,7 +24,7 @@ func (p *Player) BowlAtIndex(index uint) (Bowl, error) {
 		return nil, errors.New("index not allowed")
 	}
 	i := uint(0)
-	bg := p.BowlsGenerator()
+	bg := p.bowlsGenerator()
 	for b := range bg {
 		if i == index {
 			return b, nil
@@ -59,9 +59,9 @@ func (p *Player) Move(index uint) (*Player, error) {
 	return p, errors.New("index not allowed")
 }
 
-type bowlChan chan Bowl
+type playerBowlChan chan Bowl
 
-func (p *Player) BowlsGenerator() bowlChan {
+func (p *Player) bowlsGenerator() playerBowlChan {
 	c := make(chan Bowl)
 	var b Bowl = p.StartingBowl
 	go func() {
@@ -77,7 +77,7 @@ func (p *Player) BowlsGenerator() bowlChan {
 	return c
 }
 
-func (b bowlChan) Next() Bowl {
+func (b playerBowlChan) Next() Bowl {
 	c, ok := <-b
 	if !ok {
 		return nil

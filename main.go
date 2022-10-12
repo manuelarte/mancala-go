@@ -11,7 +11,7 @@ func main() {
 	println("Initiating game")
 	for gameEngine.PlayerTurn.CanPlay() == true {
 		display(gameEngine)
-		print(fmt.Sprintf("%s turn's, select bowl to move [0-5]: ", gameEngine.PlayerTurn.Name))
+		print(fmt.Sprintf("%s turn's, select bowl index to move [0-5]: ", gameEngine.PlayerTurn.Name))
 		var index uint
 		_, err := fmt.Scanln(&index)
 		if err != nil {
@@ -36,6 +36,7 @@ func main() {
 }
 
 func display(engine *models.GameEngine) {
+	println(" ----  -5-  -4-  -3-  -2-  -1-  -0- Index ")
 	for i := 0; i < 7; i++ {
 		var startingBowl models.Bowl = engine.Player2.Kalaha
 		displayer := models.CreateDisplayer(engine.Player1, startingBowl)
@@ -48,6 +49,7 @@ func display(engine *models.GameEngine) {
 		}
 		println()
 	}
+	println(" Index -0-  -1-  -2-  -3-  -4-  -5-  ---- ")
 }
 
 func Initialize() *models.GameEngine {
