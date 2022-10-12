@@ -8,13 +8,18 @@ var _ Bowl = &Kalaha{}
 type Bowl interface {
 	PassBeads(player *Player, beads uint) *Player
 	Next() Bowl
+	TheOwner() *Player
+}
+
+type BaseBowl struct {
+	Beads   uint
+	Owner   *Player
+	TheNext Bowl
 }
 
 type PlayerBowl struct {
-	Number   uint // just for debugging
-	Beads    uint
-	Owner    *Player
-	TheNext  Bowl
+	Number uint // just for debugging
+	BaseBowl
 	Opposite *PlayerBowl
 }
 
@@ -65,11 +70,13 @@ func (pb *PlayerBowl) Next() Bowl {
 	return pb.TheNext
 }
 
+func (pb *PlayerBowl) TheOwner() *Player {
+	return pb.Owner
+}
+
 type Kalaha struct {
-	Name    string
-	Beads   uint
-	Owner   *Player
-	TheNext Bowl
+	Name string
+	BaseBowl
 }
 
 func (k *Kalaha) PassBeads(player *Player, beads uint) *Player {
@@ -86,4 +93,8 @@ func (k *Kalaha) PassBeads(player *Player, beads uint) *Player {
 
 func (k *Kalaha) Next() Bowl {
 	return k.TheNext
+}
+
+func (k *Kalaha) TheOwner() *Player {
+	return k.Owner
 }

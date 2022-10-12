@@ -56,14 +56,18 @@ func Initialize() *models.GameEngine {
 	player1.Next = player2
 
 	player1Kalaha := models.Kalaha{
-		Name:  "Player1Kalaha",
-		Beads: 0,
-		Owner: player1,
+		Name: "Player1Kalaha",
+		BaseBowl: models.BaseBowl{
+			Beads: 0,
+			Owner: player1,
+		},
 	}
 	player2Kalaha := models.Kalaha{
-		Name:  "Player2Kalaha",
-		Beads: 0,
-		Owner: player2,
+		Name: "Player2Kalaha",
+		BaseBowl: models.BaseBowl{
+			Beads: 0,
+			Owner: player2,
+		},
 	}
 	player1.Kalaha = &player1Kalaha
 	player2.Kalaha = &player2Kalaha
@@ -74,14 +78,18 @@ func Initialize() *models.GameEngine {
 	for i := 0; i < 6; i++ {
 		var bowl = &models.PlayerBowl{
 			Number: uint(i),
-			Beads:  4,
-			Owner:  player1,
+			BaseBowl: models.BaseBowl{
+				Beads: 4,
+				Owner: player1,
+			},
 		}
 		player1Bowls[i] = bowl
 		var oppositeBowl = &models.PlayerBowl{
-			Number:   uint(5 - i),
-			Beads:    4,
-			Owner:    player2,
+			Number: uint(5 - i),
+			BaseBowl: models.BaseBowl{
+				Beads: 4,
+				Owner: player2,
+			},
 			Opposite: bowl,
 		}
 		player2Bowls[5-i] = oppositeBowl
@@ -106,8 +114,8 @@ func Initialize() *models.GameEngine {
 		Player1Bowls:  &player1Bowls,
 		Player2Bowls:  &player2Bowls,
 	}
-	player1.Bowls = &player1Bowls
-	player2.Bowls = &player2Bowls
+	player1.StartingBowl = player1Bowls[0]
+	player2.StartingBowl = player2Bowls[0]
 
 	return &models.GameEngine{
 		Board:      board,
