@@ -1,6 +1,8 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var _ Displayer = &PrintPlayerBowl{}
 var _ Displayer = &PrintKalaha{}
@@ -11,7 +13,7 @@ type Displayer interface {
 
 type PrintPlayerBowl struct {
 	*PlayerBowl
-	Player1 *Player
+	Player1 Player
 }
 
 func (ppb *PrintPlayerBowl) Display(line uint) string {
@@ -23,7 +25,7 @@ func (ppb *PrintPlayerBowl) Display(line uint) string {
 
 type PrintKalaha struct {
 	*Kalaha
-	Player1 *Player
+	Player1 Player
 }
 
 func (pk *PrintKalaha) Display(line uint) string {
@@ -46,7 +48,7 @@ func (pk *PrintKalaha) Display(line uint) string {
 	return [7]string{string0, string1, stringEmpty, string3, stringEmpty, string5, string6}[line]
 }
 
-func CreateDisplayer(player1 *Player, bowl Bowl) Displayer {
+func CreateDisplayer(player1 Player, bowl Bowl) Displayer {
 	if pb, ok := bowl.(*PlayerBowl); ok {
 		return &PrintPlayerBowl{pb, player1}
 	}

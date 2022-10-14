@@ -9,16 +9,21 @@ func main() {
 	gameEngine := Initialize()
 
 	println("Initiating game")
-	for gameEngine.PlayerTurn.CanPlay() == true {
+	for gameEngine.PlayerTurn.CanPlay() {
 		display(gameEngine)
-		print(fmt.Sprintf("%s turn's, select bowl index to move [0-5]: ", gameEngine.PlayerTurn.Name))
+		name := "AI"
+		if hp, ok := gameEngine.PlayerTurn.(*models.HumanPlayer); ok {
+			name = hp.Name
+		}
+		message := fmt.Sprintf("%s turn's, select bowl index to move [0-5]: ", name)
+		print(message)
 		var index uint
 		_, err := fmt.Scanln(&index)
 		if err != nil {
 			panic("can't parse the input")
 		}
-		if gameEngine.PlayerTurn.CanMove(index) {
-			err := gameEngine.Move(index)
+		if gameEngine.PlayerTurn.CanPlayIndex(index) {
+			err := gameEngine.Play(index)
 			if err != nil {
 				panic("error when moving bowl")
 			}
@@ -38,14 +43,14 @@ func main() {
 func display(engine *models.GameEngine) {
 	println(" ----  -5-  -4-  -3-  -2-  -1-  -0- Index ")
 	for i := 0; i < 7; i++ {
-		var startingBowl models.Bowl = engine.Player2.Kalaha
+		var startingBowl models.Bowl = engine.Player2.GetKalaha()
 		displayer := models.CreateDisplayer(engine.Player1, startingBowl)
 		print(displayer.Display(uint(i)))
-		startingBowl = startingBowl.Next()
-		for startingBowl != engine.Player1.Kalaha.Next() {
+		startingBowl = startingBowl.GetNext()
+		for startingBowl != engine.Player1.GetKalaha().GetNext() {
 			displayer := models.CreateDisplayer(engine.Player1, startingBowl)
 			print(displayer.Display(uint(i)))
-			startingBowl = startingBowl.Next()
+			startingBowl = startingBowl.GetNext()
 		}
 		println()
 	}
@@ -54,9 +59,9 @@ func display(engine *models.GameEngine) {
 
 func Initialize() *models.GameEngine {
 	initialBeads := uint(4)
-	player1 := &models.Player{Name: "Player1"}
-	player2 := &models.Player{Name: "Player2", Next: player1}
-	player1.Next = player2
+	player1 := &models.HumanPlayer{Name: "Player1", BasePlayer: &models.BasePlayer{}}
+	player2 := &models.HumanPlayer{BasePlayer: &models.BasePlayer{Opponent: player1}, Name: "Player2"}
+	player1.Opponent = player2
 
 	player1Kalaha := models.Kalaha{
 		Name: "Player1Kalaha",

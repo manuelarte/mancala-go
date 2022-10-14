@@ -1,12 +1,14 @@
 package models
 
-import "errors"
+import (
+	"errors"
+)
 
 type GameEngine struct {
 	Board      Board
-	Player1    *Player
-	Player2    *Player
-	PlayerTurn *Player
+	Player1    Player
+	Player2    Player
+	PlayerTurn Player
 }
 
 type Board struct {
@@ -16,8 +18,8 @@ type Board struct {
 	Player2Bowls  *[6]*PlayerBowl
 }
 
-func (ge *GameEngine) Move(index uint) error {
-	turn, err := ge.PlayerTurn.Move(index)
+func (ge *GameEngine) Play(index uint) error {
+	turn, err := ge.PlayerTurn.Play(index)
 	if err != nil {
 		return err
 	}
@@ -25,24 +27,24 @@ func (ge *GameEngine) Move(index uint) error {
 	return nil
 }
 
-func (ge *GameEngine) Finish() (map[*Player]uint, error) {
+func (ge *GameEngine) Finish() (map[Player]uint, error) {
 	if ge.PlayerTurn.CanPlay() {
 		return nil, errors.New("player still allowed to play")
 	}
-	pointsPerPlayer := map[*Player]uint{ge.Player1: ge.Player1.Kalaha.Beads, ge.Player2: ge.Player2.Kalaha.Beads}
-	var b1 Bowl = ge.Player1.StartingBowl
-	for b1.TheOwner() != ge.Player2 {
+	pointsPerPlayer := map[Player]uint{ge.Player1: ge.Player1.GetKalaha().Beads, ge.Player2: ge.Player2.GetKalaha().Beads}
+	var b1 Bowl = ge.Player1.GetStartingBowl()
+	for b1.GetOwner() != ge.Player2 {
 		if pb, ok := b1.(*PlayerBowl); ok {
 			pointsPerPlayer[ge.Player1] = pointsPerPlayer[ge.Player1] + pb.Beads
 		}
-		b1 = b1.Next()
+		b1 = b1.GetNext()
 	}
-	var b2 Bowl = ge.Player2.StartingBowl
-	for b2.TheOwner() != ge.Player1 {
+	var b2 Bowl = ge.Player2.GetStartingBowl()
+	for b2.GetOwner() != ge.Player1 {
 		if pb, ok := b2.(*PlayerBowl); ok {
 			pointsPerPlayer[ge.Player2] = pointsPerPlayer[ge.Player2] + pb.Beads
 		}
-		b2 = b2.Next()
+		b2 = b2.GetNext()
 	}
 	return pointsPerPlayer, nil
 }
