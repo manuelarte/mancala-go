@@ -4,14 +4,14 @@ var _ Bowl = &PlayerBowl{}
 var _ Bowl = &Kalaha{}
 
 type Bowl interface {
-	PassBeads(player Player, beads uint) Player
+	PassBeads(player Player, beads uint8) Player
 	GetNext() Bowl
 	GetOwner() Player
-	GetBeads() uint
+	GetBeads() uint8
 }
 
 type BaseBowl struct {
-	Beads   uint
+	Beads   uint8
 	Owner   Player
 	TheNext Bowl
 }
@@ -28,6 +28,6 @@ func (pb *BaseBowl) GetOwner() Player {
 	return pb.Owner
 }
 
-func (pb *BaseBowl) GetBeads() uint {
+func (pb *BaseBowl) GetBeads() uint8 {
 	return pb.Beads
 }

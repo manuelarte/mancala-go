@@ -12,8 +12,8 @@ type Player interface {
 	GetOpponent() Player
 	GetKalaha() *Kalaha
 	CanPlay() bool
-	Play(index uint) (Player, error)
-	CanPlayIndex(index uint) bool
+	Play(index uint8) (Player, error)
+	CanPlayIndex(index uint8) bool
 }
 
 type BasePlayer struct {
@@ -41,7 +41,7 @@ func (bp *BasePlayer) bowlsGenerator() playerBowlChan {
 	var b Bowl = bp.StartingBowl
 	go func() {
 		for {
-			if b.GetOwner().GetBasePlayer() != bp {
+			if k, ok := b.(*Kalaha); ok && k == bp.GetKalaha() {
 				close(c)
 				return
 			}
@@ -55,18 +55,18 @@ func (bp *BasePlayer) bowlsGenerator() playerBowlChan {
 func (bp *BasePlayer) CanPlay() bool {
 	bg := bp.bowlsGenerator()
 	for b := range bg {
-		if pb, ok := b.(*PlayerBowl); ok && !pb.IsEmpty() {
+		if pb, ok := b.(*PlayerBowl); ok && !pb.IsEmpty() && pb.GetOwner().GetBasePlayer() == bp {
 			return true
 		}
 	}
 	return false
 }
 
-func (bp *BasePlayer) BowlAtIndex(index uint) (Bowl, error) {
+func (bp *BasePlayer) BowlAtIndex(index uint8) (Bowl, error) {
 	if index < 0 {
 		return nil, errors.New("index not allowed")
 	}
-	i := uint(0)
+	i := uint8(0)
 	bg := bp.bowlsGenerator()
 	for b := range bg {
 		if i == index {
@@ -77,7 +77,7 @@ func (bp *BasePlayer) BowlAtIndex(index uint) (Bowl, error) {
 	return nil, errors.New("index not allowed")
 }
 
-func (bp *BasePlayer) CanPlayIndex(index uint) bool {
+func (bp *BasePlayer) CanPlayIndex(index uint8) bool {
 	b, err := bp.BowlAtIndex(index)
 	if err != nil {
 		return false
@@ -85,13 +85,13 @@ func (bp *BasePlayer) CanPlayIndex(index uint) bool {
 	if _, ok := b.(*Kalaha); ok {
 		return false
 	}
-	if pb, ok := b.(*PlayerBowl); ok && pb.Beads <= 0 {
+	if pb, ok := b.(*PlayerBowl); ok && pb.Beads <= 0 && pb.GetOwner().GetBasePlayer() == bp {
 		return false
 	}
 	return true
 }
 
-func (bp *BasePlayer) Play(index uint) (Player, error) {
+func (bp *BasePlayer) Play(index uint8) (Player, error) {
 	b, err := bp.BowlAtIndex(index)
 	if err != nil {
 		return nil, err
@@ -100,4 +100,17 @@ func (bp *BasePlayer) Play(index uint) (Player, error) {
 		return pb.Play()
 	}
 	return nil, errors.New("index not allowed")
+}
+
+func (bp *BasePlayer) GetAvailableActions() []uint8 {
+	var availableActions []uint8
+	bg := bp.bowlsGenerator()
+	index := uint8(0)
+	for b := range bg {
+		if b.GetBeads() > 0 && b.GetOwner().GetBasePlayer() == bp {
+			availableActions = append(availableActions, index)
+		}
+		index++
+	}
+	return availableActions
 }

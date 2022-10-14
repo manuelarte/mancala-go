@@ -5,7 +5,7 @@ type Kalaha struct {
 	BaseBowl
 }
 
-func (k *Kalaha) PassBeads(player Player, beads uint) Player {
+func (k *Kalaha) PassBeads(player Player, beads uint8) Player {
 	if k.Owner == player && beads > 0 {
 		k.Beads++
 		if beads == 1 {

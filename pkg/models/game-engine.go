@@ -5,7 +5,6 @@ import (
 )
 
 type GameEngine struct {
-	Board      Board
 	Player1    Player
 	Player2    Player
 	PlayerTurn Player
@@ -18,7 +17,7 @@ type Board struct {
 	Player2Bowls  *[6]*PlayerBowl
 }
 
-func (ge *GameEngine) Play(index uint) error {
+func (ge *GameEngine) Play(index uint8) error {
 	turn, err := ge.PlayerTurn.Play(index)
 	if err != nil {
 		return err
@@ -27,24 +26,41 @@ func (ge *GameEngine) Play(index uint) error {
 	return nil
 }
 
-func (ge *GameEngine) Finish() (map[Player]uint, error) {
+func (ge *GameEngine) GetPoints(player Player) uint8 {
+	if ge.PlayerTurn.CanPlay() {
+		return player.GetKalaha().Beads
+	} else {
+		points := uint8(0)
+		var b1 Bowl = player.GetStartingBowl()
+		if b1.GetOwner() == player {
+			points = points + b1.GetBeads()
+		}
+		b1 = b1.GetNext()
+		for b1 != player.GetStartingBowl() {
+			if b1.GetOwner() == player {
+				points = points + b1.GetBeads()
+			}
+			b1 = b1.GetNext()
+		}
+		return points
+	}
+
+}
+
+func (ge *GameEngine) Finish() (map[Player]uint8, error) {
 	if ge.PlayerTurn.CanPlay() {
 		return nil, errors.New("player still allowed to play")
 	}
-	pointsPerPlayer := map[Player]uint{ge.Player1: ge.Player1.GetKalaha().Beads, ge.Player2: ge.Player2.GetKalaha().Beads}
-	var b1 Bowl = ge.Player1.GetStartingBowl()
-	for b1.GetOwner() != ge.Player2 {
-		if pb, ok := b1.(*PlayerBowl); ok {
-			pointsPerPlayer[ge.Player1] = pointsPerPlayer[ge.Player1] + pb.Beads
-		}
-		b1 = b1.GetNext()
-	}
-	var b2 Bowl = ge.Player2.GetStartingBowl()
-	for b2.GetOwner() != ge.Player1 {
-		if pb, ok := b2.(*PlayerBowl); ok {
-			pointsPerPlayer[ge.Player2] = pointsPerPlayer[ge.Player2] + pb.Beads
-		}
-		b2 = b2.GetNext()
-	}
+	pointsPerPlayer := map[Player]uint8{ge.Player1: ge.GetPoints(ge.Player1), ge.Player2: ge.GetPoints(ge.Player2)}
 	return pointsPerPlayer, nil
+}
+
+func (ge *GameEngine) GetState() State {
+	state := [14]uint8{}
+	var b Bowl = ge.Player1.GetBasePlayer().GetStartingBowl()
+	for i := uint8(0); i < 14; i++ {
+		state[i] = b.GetBeads()
+		b = b.GetNext()
+	}
+	return state
 }

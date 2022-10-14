@@ -14,7 +14,7 @@ func (pb *PlayerBowl) CanMove() bool {
 	return pb.Beads > 0
 }
 
-func (pb *PlayerBowl) Steal() uint {
+func (pb *PlayerBowl) Steal() uint8 {
 	toReturn := pb.Beads
 	pb.Beads = 0
 	return toReturn
@@ -29,7 +29,7 @@ func (pb *PlayerBowl) Play() (Player, error) {
 	return pb.TheNext.PassBeads(pb.Owner, previousBeads), nil
 }
 
-func (pb *PlayerBowl) PassBeads(player Player, beads uint) Player {
+func (pb *PlayerBowl) PassBeads(player Player, beads uint8) Player {
 	if beads == 0 {
 		return player.GetOpponent()
 	}
@@ -41,10 +41,10 @@ func (pb *PlayerBowl) PassBeads(player Player, beads uint) Player {
 	return (pb.TheNext).PassBeads(player, beads-1)
 }
 
-func (pb *PlayerBowl) isSteal(player Player, beads uint) bool {
+func (pb *PlayerBowl) isSteal(player Player, beads uint8) bool {
 	return pb.Owner == player && pb.lastBead(beads) && pb.IsEmpty()
 }
 
-func (pb *PlayerBowl) lastBead(beads uint) bool {
+func (pb *PlayerBowl) lastBead(beads uint8) bool {
 	return beads == 1
 }
