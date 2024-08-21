@@ -1,4 +1,4 @@
-package models
+package utils
 
 type Pair struct {
 	State  State

@@ -1,7 +1,8 @@
-package models
+package pkg
 
 import (
 	"fmt"
+	"mancala/pkg/models"
 )
 
 var _ Displayer = &PrintPlayerBowl{}
@@ -12,8 +13,8 @@ type Displayer interface {
 }
 
 type PrintPlayerBowl struct {
-	*PlayerBowl
-	Player1 Player
+	*models.PlayerBowl
+	Player1 models.Player
 }
 
 func (ppb *PrintPlayerBowl) Display(line uint) string {
@@ -24,8 +25,8 @@ func (ppb *PrintPlayerBowl) Display(line uint) string {
 }
 
 type PrintKalaha struct {
-	*Kalaha
-	Player1 Player
+	*models.Kalaha
+	Player1 models.Player
 }
 
 func (pk *PrintKalaha) Display(line uint) string {
@@ -48,11 +49,11 @@ func (pk *PrintKalaha) Display(line uint) string {
 	return [7]string{string0, string1, stringEmpty, string3, stringEmpty, string5, string6}[line]
 }
 
-func CreateDisplayer(player1 Player, bowl Bowl) Displayer {
-	if pb, ok := bowl.(*PlayerBowl); ok {
+func CreateDisplayer(player1 models.Player, bowl models.Bowl) Displayer {
+	if pb, ok := bowl.(*models.PlayerBowl); ok {
 		return &PrintPlayerBowl{pb, player1}
 	}
-	if pk, ok := bowl.(*Kalaha); ok {
+	if pk, ok := bowl.(*models.Kalaha); ok {
 		return &PrintKalaha{pk, player1}
 	}
 	return nil
