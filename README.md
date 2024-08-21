@@ -1,3 +1,4 @@
+[![Go](https://github.com/manuelarte/mancala-go/actions/workflows/go.yml/badge.svg)](https://github.com/manuelarte/mancala-go/actions/workflows/go.yml)
 # 🎲 Mancala GO 🎲 #
 
 This project is to show how to play [Mancala](https://en.wikipedia.org/wiki/Mancala) and play against an AI.
