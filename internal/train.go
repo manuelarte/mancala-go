@@ -19,11 +19,7 @@ func Train(n uint) *models.AIPlayer {
 		for ge.PlayerTurn.CanPlay() {
 			state := ge.GetState()
 			action := ge.PlayerTurn.(*models.AIPlayer).ChooseAction(state)
-			last[ge.PlayerTurn] = utils.Pair{
-				State:  state,
-				Action: action,
-			}
-
+			last[ge.PlayerTurn] = utils.PairFrom(state, action)
 			err := ge.Play(action)
 			if err != nil {
 				panic("error in move: " + err.Error())

@@ -5,6 +5,10 @@ import "errors"
 var _ Bowl = &PlayerBowl{}
 var _ Bowl = &Kalaha{}
 
+var (
+	ErrNoBeadsInThisBowl = errors.New("no beads in this bowl")
+)
+
 type Bowl interface {
 	PassBeads(player Player, beads uint8) Player
 	GetNext() Bowl
@@ -40,7 +44,8 @@ type PlayerBowl struct {
 	Opposite *PlayerBowl
 }
 
-func (pb *PlayerBowl) CanMove() bool {
+// CanPlay Returns whether the bowl can be played or not
+func (pb *PlayerBowl) CanPlay() bool {
 	return pb.Beads > 0
 }
 
@@ -50,15 +55,22 @@ func (pb *PlayerBowl) Steal() uint8 {
 	return toReturn
 }
 
+// Play Move the beads of the bowl to the next one
+//
+// Returns the next player's turn and whether the play was possible or not
 func (pb *PlayerBowl) Play() (Player, error) {
 	if pb.Beads == 0 {
-		return nil, errors.New("no beads in this bowl")
+		return nil, ErrNoBeadsInThisBowl
 	}
 	previousBeads := pb.Beads
 	pb.Beads = 0
 	return pb.TheNext.PassBeads(pb.Owner, previousBeads), nil
 }
 
+// PassBeads Pass the beads from the bowl to the next one until there are no more beads.
+//
+// The inputs are the player who started the move and the number of beads that the bowl receives.
+// The output is the next player's turn.
 func (pb *PlayerBowl) PassBeads(player Player, beads uint8) Player {
 	if beads == 0 {
 		return player.GetOpponent()
@@ -79,11 +91,15 @@ func (pb *PlayerBowl) lastBead(beads uint8) bool {
 	return beads == 1
 }
 
+// Kalaha Struct to represent the Kalaha
 type Kalaha struct {
 	Name string
 	BaseBowl
 }
 
+// PassBeads Pass the beads to the next bowl but extracting one if the play was initiated by its owner.
+//
+// The inputs are the player who initiated the play and the number of beads received by the Kalaha bowl.
 func (k *Kalaha) PassBeads(player Player, beads uint8) Player {
 	if k.Owner == player && beads > 0 {
 		k.Beads++

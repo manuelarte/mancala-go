@@ -171,10 +171,7 @@ func (ai *AIPlayer) greedy(state utils.State) uint8 {
 	availableActions := ai.GetAvailableActions()
 	q := map[utils.Pair]float64{}
 	for _, a := range availableActions {
-		pair := utils.Pair{
-			State:  state,
-			Action: a,
-		}
+		pair := utils.PairFrom(state, a)
 		if val, ok := ai.Q[pair]; ok {
 			q[pair] = val
 		}
